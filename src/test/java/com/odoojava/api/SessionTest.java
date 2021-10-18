@@ -66,6 +66,8 @@ public class SessionTest {
 		}
 	}
 
+
+
 	@Before
 	public void startMockServer() throws Exception {
 		if (isUsingMockServer()) {
@@ -175,7 +177,16 @@ public class SessionTest {
 	@Before
 	public void setUp() throws Exception {
 		session = new Session(protocol, host, port, databaseName, userName, password);
+		session.startSession();
 	}
+
+	// @BeforeClass
+	// public static void setUp() throws Exception {
+    //     DemoDbGetter.getDemoDb(new DemoDbConnectionDataSetter());
+    //     session = new Session(protocol, host, port, databaseName, userName, password);
+
+        
+    // }
 
 	@Test
 	public void should_throw_when_parameters_are_incorrect() throws Exception {
@@ -322,6 +333,9 @@ public class SessionTest {
 
 	}
 
+
+
+
 	static boolean checkedDatabasePresence = false, authenticated = false, fetchedRemoteContext = false;
 
 	@Test
@@ -353,6 +367,57 @@ public class SessionTest {
 		// Don't forget to call SoftAssertions global verification !
 		softly.assertAll();
 	}
+
+	
+
+	@Test
+	public void test_executecommand() throws Exception {
+
+		Long picking_id = (long) 1;
+        String errorMessage = "test message";
+        errorMessage = "<ul>" + errorMessage + "</ul>";
+        Object prepare1 = session.executeCommandWithContext("stock.picking", "message_post", new Object[] {
+            picking_id.intValue(), errorMessage
+        });
+		// Check parameters given are sent in order
+		// TODO: rewrite this part as in v14 additional parameters are not allowed in
+		// context_get
+		// if (isUsingMockServer()) {
+		// mockServer
+		// .when(request().withMethod("POST").withPath("/xmlrpc/2/object")
+		// .withBody(new RegexBody(".*res.users.*context_get.*")))
+		// .respond(response().withStatusCode(200).withBody(
+		// "<?xml
+		// version='1.0'?>\n<methodResponse>\n<params>\n<param>\n<value><int>1</int></value>\n</param>\n</params>\n</methodResponse>\n"));
+		// } else {
+		// session.startSession();
+		// }
+		// Object[] parameters = new Object[] { "parameter1" };
+		// session.executeCommandWithContext("res.users", "context_get", parameters);
+		// if (isUsingMockServer()) {
+		// mockServer.verify(request().withBody(new RegexBody(".*parameter1.*")),
+		// VerificationTimes.once());
+		// }
+
+		// // Check empty array is working
+		// parameters = new Object[] {};
+		// session.executeCommand("res.users", "context_get", parameters);
+		// if (isUsingMockServer()) {
+		// mockServer.verify(request().withBody(new
+		// RegexBody(".*res.users.*context_get.*")),
+		// VerificationTimes.exactly(2));
+		// }
+
+		// // Check null is working
+		// parameters = null;
+		// session.executeCommand("res.users", "context_get", parameters);
+		// if (isUsingMockServer()) {
+		// mockServer.verify(request().withBody(new
+		// RegexBody(".*res.users.*context_get.*")),
+		// VerificationTimes.exactly(3));
+		// }
+	}
+
 
 	@Test
 	public void should_send_given_parameters() throws Exception {

@@ -227,7 +227,7 @@ public class Session {
 
 		} catch (JsonRpcClientException e) {
 			System.out.println("Json rpc issue possibly caused by https://github.com/OCA/server-tools/issues/1237");
-			e.printStackTrace();
+			//e.printStackTrace();
 		} catch (Throwable e) {
 			System.out.println("General exception");
 			e.printStackTrace();

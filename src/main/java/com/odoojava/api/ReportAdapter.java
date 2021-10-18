@@ -106,6 +106,9 @@ public class ReportAdapter {
 		if (this.serverVersion.getMajor() < 11) {
 			reportMethod = "render_report";
 		}
+		if (this.serverVersion.getMajor() == 14) {
+			reportMethod = "render";
+		}
 		return reportMethod;
 	}
 
