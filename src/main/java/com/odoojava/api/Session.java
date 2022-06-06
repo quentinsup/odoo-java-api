@@ -183,8 +183,8 @@ public class Session {
 
 	private void checkVersionCompatibility() throws XmlRpcException, OdooApiException {
 
-		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 14) {
-			throw new OdooApiException("Only Odoo Version from v8.x to 14.x are maintained. "
+		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 15) {
+			throw new OdooApiException("Only Odoo Version from v8.x to 15.x are maintained. "
 					+ "Please choose another version of the library");
 		}
 
