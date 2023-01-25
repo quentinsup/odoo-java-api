@@ -222,7 +222,7 @@ public class Session {
 
 		// JSONRPC part
 		try {
-			id = authenticate_json_rpc();
+			// id = authenticate_json_rpc();
 			System.out.println("json rpc login");
 
 		} catch (JsonRpcClientException e) {
