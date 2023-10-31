@@ -258,64 +258,64 @@ public class Session {
 		return (int) result.get("uid");
 	}
 
-	// public Object[] executeJsonCommand(final String objectName, final String commandName, final Object[] args)
-	// 		throws Throwable {
-	// 	// Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
+	public Object[] executeJsonCommand(final String objectName, final String commandName, final Object[] args)
+			throws Throwable {
+		// Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
 
-	// 	// // Combine the connection parameters and command parameters
-	// 	// Object[] params = new Object[connectionParams.length + (parameters == null ? 0 : parameters.length)];
-	// 	// System.arraycopy(connectionParams, 0, params, 0, connectionParams.length);
+		// // Combine the connection parameters and command parameters
+		// Object[] params = new Object[connectionParams.length + (parameters == null ? 0 : parameters.length)];
+		// System.arraycopy(connectionParams, 0, params, 0, connectionParams.length);
 
-	// 	// if (parameters != null && parameters.length > 0) {
-	// 	// 	System.arraycopy(parameters, 0, params, connectionParams.length, parameters.length);
-	// 	// }
-	// 	// return objectClient.execute("execute", params);
-	// 	jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
-	// 	Map<String, Object> jsonparams = new HashMap<>();
-	// 	jsonparams.put("service", "object");
-	// 	jsonparams.put("method", "execute_kw");
+		// if (parameters != null && parameters.length > 0) {
+		// 	System.arraycopy(parameters, 0, params, connectionParams.length, parameters.length);
+		// }
+		// return objectClient.execute("execute", params);
+		jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+		Map<String, Object> jsonparams = new HashMap<>();
+		jsonparams.put("service", "object");
+		jsonparams.put("method", "execute_kw");
 
-	// 	ArrayList<Object> methodparams = new ArrayList<>();
-	// 	methodparams.add(databaseName);
-	// 	methodparams.add(userID);
-	// 	methodparams.add(password);
-	// 	methodparams.add(objectName);
-	// 	methodparams.add(commandName);
-	// 	methodparams.add(args);
+		ArrayList<Object> methodparams = new ArrayList<>();
+		methodparams.add(databaseName);
+		methodparams.add(userID);
+		methodparams.add(password);
+		methodparams.add(objectName);
+		methodparams.add(commandName);
+		methodparams.add(args);
 
-	// 	jsonparams.put("args", methodparams);
+		jsonparams.put("args", methodparams);
 
-	// 	Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
 
-	// 	return result;
+		return result;
 
-	// }
+	}
 
-	// public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
-	// 		throws Throwable {
-	// 	// TODO: fast and uggly implementation of json rpc, has to be reafctored in the
-	// 	// future
+	public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
+			throws Throwable {
+		// TODO: fast and uggly implementation of json rpc, has to be reafctored in the
+		// future
 
-	// 	jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
-	// 	Map<String, Object> jsonparams = new HashMap<>();
-	// 	jsonparams.put("service", "object");
-	// 	jsonparams.put("method", "execute_kw");
+		jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+		Map<String, Object> jsonparams = new HashMap<>();
+		jsonparams.put("service", "object");
+		jsonparams.put("method", "execute_kw");
 
-	// 	ArrayList<Object> methodparams = new ArrayList<>();
-	// 	methodparams.add(databaseName);
-	// 	methodparams.add(userID);
-	// 	methodparams.add(password);
-	// 	methodparams.add(reportModel);
-	// 	methodparams.add(reportMethod);
-	// 	methodparams.add(args);
+		ArrayList<Object> methodparams = new ArrayList<>();
+		methodparams.add(databaseName);
+		methodparams.add(userID);
+		methodparams.add(password);
+		methodparams.add(reportModel);
+		methodparams.add(reportMethod);
+		methodparams.add(args);
 
-	// 	jsonparams.put("args", methodparams);
+		jsonparams.put("args", methodparams);
 
-	// 	Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
 
-	// 	return result;
+		return result;
 
-	// }
+	}
 
 	void checkDatabasePresenceSafe() {
 		// 21/07/2012 - Database listing may not be enabled (--no-database-list
