@@ -182,9 +182,8 @@ public class Session {
 	}
 
 	private void checkVersionCompatibility() throws XmlRpcException, OdooApiException {
-
-		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 14) {
-			throw new OdooApiException("Only Odoo Version from v8.x to 14.x are maintained. "
+		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 16) {
+			throw new OdooApiException("Only Odoo Version from v8.x to 16.x are maintained. "
 					+ "Please choose another version of the library");
 		}
 
@@ -222,16 +221,16 @@ public class Session {
 
 		// JSONRPC part
 		try {
-			id = authenticate_json_rpc();
+			// id = authenticate_json_rpc();
 			System.out.println("json rpc login");
 
 		} catch (JsonRpcClientException e) {
 			System.out.println("Json rpc issue possibly caused by https://github.com/OCA/server-tools/issues/1237");
-			//e.printStackTrace();
+			// e.printStackTrace();
 		} catch (Throwable e) {
 			System.out.println("General exception");
 			e.printStackTrace();
-		} 
+		}
 
 		if (id instanceof Integer) {
 			userID = (Integer) id;
@@ -255,35 +254,68 @@ public class Session {
 
 		jsonclient.setServiceUrl(getJsonurl("web/session/authenticate"));
 
-		Map<String, Object> result =  jsonclient.invoke("call", articleMapOne, HashMap.class);
+		Map<String, Object> result = jsonclient.invoke("call", articleMapOne, HashMap.class);
 		return (int) result.get("uid");
 	}
 
-	public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
-			throws Throwable {
-		// TODO: fast and uggly implementation of json rpc, has to be reafctored in the
-		// future
+	// public Object[] executeJsonCommand(final String objectName, final String commandName, final Object[] args)
+	// 		throws Throwable {
+	// 	// Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
 
-		jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
-		Map<String, Object> jsonparams = new HashMap<>();
-		jsonparams.put("service", "object");
-		jsonparams.put("method", "execute_kw");
+	// 	// // Combine the connection parameters and command parameters
+	// 	// Object[] params = new Object[connectionParams.length + (parameters == null ? 0 : parameters.length)];
+	// 	// System.arraycopy(connectionParams, 0, params, 0, connectionParams.length);
 
-		ArrayList<Object> methodparams = new ArrayList<>();
-		methodparams.add(databaseName);
-		methodparams.add(userID);
-		methodparams.add(password);
-		methodparams.add(reportModel);
-		methodparams.add(reportMethod);
-		methodparams.add(args);
+	// 	// if (parameters != null && parameters.length > 0) {
+	// 	// 	System.arraycopy(parameters, 0, params, connectionParams.length, parameters.length);
+	// 	// }
+	// 	// return objectClient.execute("execute", params);
+	// 	jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+	// 	Map<String, Object> jsonparams = new HashMap<>();
+	// 	jsonparams.put("service", "object");
+	// 	jsonparams.put("method", "execute_kw");
 
-		jsonparams.put("args", methodparams);
+	// 	ArrayList<Object> methodparams = new ArrayList<>();
+	// 	methodparams.add(databaseName);
+	// 	methodparams.add(userID);
+	// 	methodparams.add(password);
+	// 	methodparams.add(objectName);
+	// 	methodparams.add(commandName);
+	// 	methodparams.add(args);
 
-		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+	// 	jsonparams.put("args", methodparams);
 
-		return result;
+	// 	Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
 
-	}
+	// 	return result;
+
+	// }
+
+	// public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
+	// 		throws Throwable {
+	// 	// TODO: fast and uggly implementation of json rpc, has to be reafctored in the
+	// 	// future
+
+	// 	jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+	// 	Map<String, Object> jsonparams = new HashMap<>();
+	// 	jsonparams.put("service", "object");
+	// 	jsonparams.put("method", "execute_kw");
+
+	// 	ArrayList<Object> methodparams = new ArrayList<>();
+	// 	methodparams.add(databaseName);
+	// 	methodparams.add(userID);
+	// 	methodparams.add(password);
+	// 	methodparams.add(reportModel);
+	// 	methodparams.add(reportMethod);
+	// 	methodparams.add(args);
+
+	// 	jsonparams.put("args", methodparams);
+
+	// 	Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+
+	// 	return result;
+
+	// }
 
 	void checkDatabasePresenceSafe() {
 		// 21/07/2012 - Database listing may not be enabled (--no-database-list
@@ -399,13 +431,17 @@ public class Session {
 	 * @throws XmlRpcException
 	 */
 	public Object executeCommandKw(final String objectName, final String commandName, final Object[] parameters,
-			Context context) throws XmlRpcException {
+			final Object[] kwargs, Context context) throws XmlRpcException {
 
 		List<Object> paramsList = new ArrayList<>();
 		paramsList.addAll(Arrays.asList(new Object[] { databaseName, userID, password, objectName, commandName }));
+
 		if (parameters != null && parameters.length > 0) {
 			paramsList.add(Arrays.asList(parameters));
 		}
+		// if (kwargs != null && kwargs.length > 0) {
+		// paramsList.add(Arrays.asList(kwargs));
+		// }
 
 		Map<String, Context> c = new HashMap<>();
 		c.put("context", context);
@@ -427,7 +463,7 @@ public class Session {
 	 * @throws XmlRpcException
 	 */
 	public Object executeCommandWithContext(final String objectName, final String commandName,
-			final Object[] parameters) throws XmlRpcException {
+			final Object[] parameters, final Object[]... kwargs) throws XmlRpcException {
 		Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
 
 		if (this.getServerVersion().getMajor() < 13) {
@@ -439,7 +475,7 @@ public class Session {
 			System.arraycopy(new Object[] { getContext() }, 0, params, parameters.length, 1);
 			return executeCommand(objectName, commandName, params);
 		} else {
-			return executeCommandKw(objectName, commandName, parameters, getContext());
+			return executeCommandKw(objectName, commandName, parameters, kwargs, getContext());
 		}
 
 	}
