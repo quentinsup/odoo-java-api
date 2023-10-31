@@ -221,7 +221,7 @@ public class Session {
 
 		// JSONRPC part
 		try {
-			// id = authenticate_json_rpc();
+			id = authenticate_json_rpc();
 			System.out.println("json rpc login");
 
 		} catch (JsonRpcClientException e) {
@@ -293,8 +293,10 @@ public class Session {
 
 	public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
 			throws Throwable {
-		// TODO: fast and uggly implementation of json rpc, has to be reafctored in the
-		// future
+		/* 
+        TODO: fast and uggly implementation of json rpc, 
+        has to be reafctored in the future
+         */
 
 		jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
 		Map<String, Object> jsonparams = new HashMap<>();
@@ -307,14 +309,16 @@ public class Session {
 		methodparams.add(password);
 		methodparams.add(reportModel);
 		methodparams.add(reportMethod);
+
+        ArrayList<Object> empty_recordset_for_model_annotation_in_odoo = new ArrayList<>();
+        //The render method is annotated @model in Odoo, so we must pass an empty value as the first
+        //paramter otherwise Odoo will only interpret 1 parameter from the 2 given
+        //TODO: find a way to identify if a metho is annotated with @api.model 
+        args.add(0, empty_recordset_for_model_annotation_in_odoo );
 		methodparams.add(args);
-
 		jsonparams.put("args", methodparams);
-
 		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
-
 		return result;
-
 	}
 
 	void checkDatabasePresenceSafe() {

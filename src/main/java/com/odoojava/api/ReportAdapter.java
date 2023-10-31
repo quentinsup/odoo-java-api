@@ -107,6 +107,14 @@ public class ReportAdapter {
 			reportMethod = "render_report";
 		}
 		if (this.serverVersion.getMajor() == 14) {
+            System.out.println("Since v14, render method is no more public : https://github.com/odoo/odoo/issues/78528 ");
+            System.out.println("The render method proposed `render` suppose that you patched the code : https://github.com/odoo-java/odoo-java-api/issues/17 ");
+			reportMethod = "render";
+		}
+        if (this.serverVersion.getMajor() > 14) {
+            System.out.println("Since v14, render method is no more public : https://github.com/odoo/odoo/issues/78528 ");
+            System.out.println("The render method proposed `render` suppose that you patched the code : https://github.com/odoo-java/odoo-java-api/issues/17 ");
+			
 			reportMethod = "render";
 		}
 		return reportMethod;

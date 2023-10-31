@@ -48,7 +48,7 @@ Run : ```mvn package``` or any other goal that will produce a .jar in the target
 
 ## Context manipulation
 
-Values must cast in correct forma
+Values must cast in correct format
 
 ```
     Map inputMap = new java.util.HashMap();
