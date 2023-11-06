@@ -30,7 +30,6 @@ import org.apache.xmlrpc.XmlRpcException;
 import com.odoojava.api.OdooXmlRpcProxy.RPCProtocol;
 import com.odoojava.api.OdooXmlRpcProxy.RPCServices;
 import com.googlecode.jsonrpc4j.*;
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
 
 /**
  * *
@@ -242,34 +241,27 @@ public class Session {
 	}
 
 	private int authenticate_json_rpc() throws Throwable {
-		// TODO: fast and uggly implementation of json rpc, has to be refactored in the
-		// future
+		/*  TODO: fast and uggly implementation of json rpc, has to be refactored in the
+		future
+        */        
+        jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+		Map<String, Object> jsonparams = new HashMap<>();
+		jsonparams.put("service", "common");
+		jsonparams.put("method", "login");
 
-		Map<String, String> articleMapOne = new HashMap<>();
-		articleMapOne.put("password", password);
-		articleMapOne.put("login", userName);
-		articleMapOne.put("db", databaseName);
+		ArrayList<Object> methodparams = new ArrayList<>();
+		methodparams.add(databaseName);
+		methodparams.add(userName);
+		methodparams.add(password);
+		jsonparams.put("args", methodparams);
 
-		// Object[] result = call_json_rpc(, "common", "login", articleMapOne);
+		Object result = jsonclient.invoke("call", jsonparams, int.class);
 
-		jsonclient.setServiceUrl(getJsonurl("web/session/authenticate"));
-
-		Map<String, Object> result = jsonclient.invoke("call", articleMapOne, HashMap.class);
-		return (int) result.get("uid");
+		return (int) result;
 	}
 
 	public Object[] executeJsonCommand(final String objectName, final String commandName, final Object[] args)
 			throws Throwable {
-		// Object[] connectionParams = new Object[] { databaseName, userID, password, objectName, commandName };
-
-		// // Combine the connection parameters and command parameters
-		// Object[] params = new Object[connectionParams.length + (parameters == null ? 0 : parameters.length)];
-		// System.arraycopy(connectionParams, 0, params, 0, connectionParams.length);
-
-		// if (parameters != null && parameters.length > 0) {
-		// 	System.arraycopy(parameters, 0, params, connectionParams.length, parameters.length);
-		// }
-		// return objectClient.execute("execute", params);
 		jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
 		Map<String, Object> jsonparams = new HashMap<>();
 		jsonparams.put("service", "object");
