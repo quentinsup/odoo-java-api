@@ -256,6 +256,7 @@ public class Session {
 		methodparams.add(databaseName);
 		methodparams.add(userName);
 		methodparams.add(password);
+        //TODO : maybe also use the same syntax as reporting
 		jsonparams.put("args", methodparams);
 
 		int result = jsonclient.invoke("call", jsonparams, int.class);
@@ -280,11 +281,19 @@ public class Session {
 		methodparams.add(password);
 		methodparams.add(reportModel);
 		methodparams.add(reportMethod);
+
+        ArrayList<Object> empty_recordset_for_model_annotation_in_odoo = new ArrayList<>();
+        //The render method is annotated @model in Odoo, so we must pass an empty value as the first
+        //paramter otherwise Odoo will only interpret 1 parameter from the 2 given
+        //TODO: find a way to identify if a metho is annotated with @api.model 
+        args.add(0, empty_recordset_for_model_annotation_in_odoo );
 		methodparams.add(args);
-
 		jsonparams.put("args", methodparams);
-
 		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+
+		// methodparams.add(args);
+		// jsonparams.put("args", methodparams);
+		// Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
 
 		return result;
 
