@@ -30,7 +30,6 @@ import org.apache.xmlrpc.XmlRpcException;
 import com.odoojava.api.OdooXmlRpcProxy.RPCProtocol;
 import com.odoojava.api.OdooXmlRpcProxy.RPCServices;
 import com.googlecode.jsonrpc4j.*;
-import com.googlecode.jsonrpc4j.JsonRpcClientException;
 
 /**
  * *
@@ -183,11 +182,10 @@ public class Session {
 
 	private void checkVersionCompatibility() throws XmlRpcException, OdooApiException {
 
-		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 15) {
-			throw new OdooApiException("Only Odoo Version from v8.x to 15.x are maintained. "
+		if (this.getServerVersion().getMajor() < 8 || this.getServerVersion().getMajor() > 16) {
+			throw new OdooApiException("Only Odoo Version from v8.x to 16.x are maintained. "
 					+ "Please choose another version of the library");
 		}
-
 	}
 
 	/**
@@ -222,12 +220,15 @@ public class Session {
 
 		// JSONRPC part
 		try {
-			// id = authenticate_json_rpc();
+			id = authenticate_json_rpc();
 			System.out.println("json rpc login");
 
 		} catch (JsonRpcClientException e) {
-			System.out.println("Json rpc issue possibly caused by https://github.com/OCA/server-tools/issues/1237");
-			e.printStackTrace();
+            if (this.getServerVersion().getMajor() == 10){
+                System.out.println("ODOO 10.0 : Json rpc issue possibly caused by https://github.com/OCA/server-tools/issues/1237");
+                e.printStackTrace();
+                System.out.println("ODOO 10.0 : if the trace match the issue, you could ignore this message");
+            }
 		} catch (Throwable e) {
 			System.out.println("General exception");
 			e.printStackTrace();
@@ -246,17 +247,22 @@ public class Session {
 		// TODO: fast and uggly implementation of json rpc, has to be refactored in the
 		// future
 
-		Map<String, String> articleMapOne = new HashMap<>();
-		articleMapOne.put("password", password);
-		articleMapOne.put("login", userName);
-		articleMapOne.put("db", databaseName);
+        jsonclient.setServiceUrl(getJsonurl("jsonrpc"));
+		Map<String, Object> jsonparams = new HashMap<>();
+		jsonparams.put("service", "common");
+		jsonparams.put("method", "login");
 
-		// Object[] result = call_json_rpc(, "common", "login", articleMapOne);
+		ArrayList<Object> methodparams = new ArrayList<>();
+		methodparams.add(databaseName);
+		methodparams.add(userName);
+		methodparams.add(password);
+        //TODO : maybe also use the same syntax as reporting
+		jsonparams.put("args", methodparams);
 
-		jsonclient.setServiceUrl(getJsonurl("web/session/authenticate"));
+		int result = jsonclient.invoke("call", jsonparams, int.class);
 
-		Map<String, Object> result =  jsonclient.invoke("call", articleMapOne, HashMap.class);
-		return (int) result.get("uid");
+		return (int) result;
+	
 	}
 
 	public Object[] call_report_jsonrpc(String reportModel, String reportMethod, ArrayList<Object> args)
@@ -275,11 +281,19 @@ public class Session {
 		methodparams.add(password);
 		methodparams.add(reportModel);
 		methodparams.add(reportMethod);
+
+        ArrayList<Object> empty_recordset_for_model_annotation_in_odoo = new ArrayList<>();
+        //The render method is annotated @model in Odoo, so we must pass an empty value as the first
+        //paramter otherwise Odoo will only interpret 1 parameter from the 2 given
+        //TODO: find a way to identify if a metho is annotated with @api.model 
+        args.add(0, empty_recordset_for_model_annotation_in_odoo );
 		methodparams.add(args);
-
 		jsonparams.put("args", methodparams);
-
 		Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
+
+		// methodparams.add(args);
+		// jsonparams.put("args", methodparams);
+		// Object[] result = jsonclient.invoke("call", jsonparams, Object[].class);
 
 		return result;
 

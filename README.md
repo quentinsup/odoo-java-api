@@ -118,3 +118,17 @@ saveToDatabaseForTrackingPurpose(newPartner.getID());
 
 * https://sourceforge.net/p/openerpjavaapi/wiki/Dependencies/
 * https://sourceforge.net/p/openerpjavaapi/wiki/Examples/
+
+
+# Known bugs
+
+Since v14, the render method is now private.
+So printing is no more possible with rpc call.
+For the references :
+* https://github.com/odoo/odoo/issues/78528
+* https://github.com/OCA/odoorpc/issues/65
+
+A workaround is to create a module to make the render method public until we implement this method https://github.com/OCA/odoorpc/issues/88#issuecomment-1907870776
+a better workaround is to propose a PR in this repo to implement the missing part
+
+
