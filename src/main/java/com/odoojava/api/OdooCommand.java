@@ -76,10 +76,26 @@ public class OdooCommand {
         Object offsetParam = offset < 0 ? false : offset;
         Object limitParam = limit < 0 ? false : limit;
         Object orderParam = order == null || order.length() == 0 ? false : order;
+        
+        // TODO: Need a big refactor because it become difficult to maintain
+        // strategy, work with interface and factory to make the call generic in our lib and 
+        // have specific class for eash version 
+
+        // default version v17  : https://github.com/odoo/odoo/blob/17.0/odoo/models.py#L1594
+        // no more count parameter in the search
+        Object[] params = new Object[] { filter, offsetParam, limitParam, orderParam };
+        
+        
+        if (this.session.getServerVersion().getMajor() < 10){
         // Before Odoo 10 there's a 'context' parameter between order and count
-        Object[] params = (this.session.getServerVersion().getMajor() < 10)
-                ? new Object[] { filter, offsetParam, limitParam, orderParam, session.getContext(), count }
-                : new Object[] { filter, offsetParam, limitParam, orderParam, count };
+            params = new Object[] { filter, offsetParam, limitParam, orderParam, session.getContext(), count };
+        }
+        if (this.session.getServerVersion().getMajor() >= 10 &&
+                this.session.getServerVersion().getMajor() < 17){
+        // Before Odoo 10 there's a 'context' parameter between order and count
+            params = new Object[] { filter, offsetParam, limitParam, orderParam, count };
+        }
+        
 
         try {
             // TODO: test differents version with search on quantity on products
