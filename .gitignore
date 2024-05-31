@@ -3,7 +3,8 @@
 /bin/
 /target/
 
-# Eclipse stuff
+# IDE stuff
+.vscode
 .project
 .classpath
 .settings/
