@@ -74,7 +74,7 @@ public class Row {
     */
     public String getString(String fieldName){
         String res=null;
-        if ( get(fieldName).toString()!= null){
+        if ( get(fieldName)!= null){
             res = get(fieldName).toString();
         }
         return res;
