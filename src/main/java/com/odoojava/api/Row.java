@@ -67,7 +67,19 @@ public class Row {
 		Object idValue = get("id");
 		return Integer.parseInt(idValue.toString());
 	}
-	
+        
+    /**
+    * Returns the database string field of the object/row.
+    * @return string
+    */
+    public String getString(String fieldName){
+        String res=null;
+        if ( get(fieldName)!= null){
+            res = get(fieldName).toString();
+        }
+        return res;
+    }
+
 	/**
 	 * Add a listener to be notified when a row is being changed
 	 * @param listener
